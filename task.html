@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxpc3RhIGRlIFRhcmVmYXMiLAogICJzaG9ydF9uYW1lIjogIlRhcmVmYXMiLAogICJzdGFydF91cmwiOiAiaW5kZXguaHRtbCIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y1ZjVmNSIsCiAgInRoZW1lX2NvbG9yIjogIiM0Q0FGNTAiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBEOTRiV3dnZG1WeWMybHZiajBpTVM0d0lpQmxibU52WkdsdVp6MGlkWFJtTFRnaVB6NDhjM1puSUhkcFpIUm9QU0l4TURBbElpQm9aV2xuYUhROUlqRXdNQ1VpSUhacFpYZENiM2c5SWpBZ01DQXhNREFnTVRBd0lpQjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIaHRiRzV6T25oc2FXNXJQU0pvZEhSd09pOHZkM2QzTG5jekxtOXlaeTh4T1RrNUwzaHNhVzVySWo0OGNtVmpkQ0IzYVdSMGFEMGlNVEF3SlNJZ2FHVmxaMmgwUFNJeE1EQWxJaUJtYVd4c1BTSmliR0ZqYXlJZ0x6NDhjM1I1YkdVZ2JXVmthWFZ0UFNKaWJHRmpheUlnZDJsa2RHZ3RaWGgwWlhKdVlXd3RZMlZ5ZEdsbWFXTmhkR1U5SW5kcGMyVWlQanh6ZEhsc1pUNXVhV0Z0WlM1bGVHVmpJR0p2YkdRNklHTnZiblJ5YVd4elkzSnBjSFFnWlhoMFpXNXpMV2x0Y0d4cFkybDBPaUJ3YUhKaGMyVStQSE4wZVd4bFBuTnRZV3hzT2lCNVpYTStQSE4wZVd4bFBuUnlZVzV6Wm05eWJUb2djbTkwWVhSbEtESXdaR1ZuS1R3dmMzUjViR1UrUEM5emRIbHNaVDQ4TDNOMGVXeGxQand2YzNablBnPT0iLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+    <meta name="theme-color" content="#4CAF50">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #tarefa {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .concluida {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .acoes button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+        .concluir {
+            background-color: #2196F3;
+        }
+        .excluir {
+            background-color: #f44336;
+        }
+        .info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .data-atual {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="cabecalho">
+        <h1>Minhas Tarefas</h1>
+        <div class="data-atual" id="data-atual"></div>
+    </div>
+    
+    <div class="input-container">
+        <input type="text" id="tarefa" placeholder="Digite uma nova tarefa...">
+        <button onclick="adicionarTarefa()">Adicionar</button>
+    </div>
+    
+    <ul id="lista-tarefas">
+        <!-- As tarefas serão adicionadas aqui pelo JavaScript -->
+    </ul>
+
+    <div class="info">
+        <p>Para instalar: Abra as opções do navegador e selecione "Instalar aplicativo"</p>
+    </div>
+
+    <script>
+        // Service Worker para funcionamento offline
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                }).catch(error => {
+                    console.log('Falha ao registrar ServiceWorker:', error);
+                });
+            });
+        }
+
+        // Configurar data atual
+        function atualizarData() {
+            const dataAtual = document.getElementById('data-atual');
+            const hoje = new Date();
+            const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dataAtual.textContent = hoje.toLocaleDateString('pt-BR', opcoes);
+        }
+        atualizarData();
+
+        // Função para adicionar uma nova tarefa
+        function adicionarTarefa() {
+            // Obter o valor do campo de entrada
+            const input = document.getElementById("tarefa");
+            const textoTarefa = input.value.trim();
+            
+            // Verificar se o campo não está vazio
+            if(textoTarefa === "") {
+                alert("Por favor, digite uma tarefa!");
+                return;
+            }
+            
+            // Criar um novo item de lista
+            const listaTarefas = document.getElementById("lista-tarefas");
+            const novaTarefa = document.createElement("li");
+            
+            // Adicionar o texto da tarefa
+            const textoElemento = document.createElement("span");
+            textoElemento.textContent = textoTarefa;
+            novaTarefa.appendChild(textoElemento);
+            
+            // Adicionar botões de ação
+            const acoes = document.createElement("div");
+            acoes.className = "acoes";
+            
+            // Botão para marcar como concluída
+            const botaoConcluir = document.createElement("button");
+            botaoConcluir.className = "concluir";
+            botaoConcluir.textContent = "✓";
+            botaoConcluir.onclick = function() {
+                textoElemento.classList.toggle("concluida");
+                salvarTarefas();
+            };
+            acoes.appendChild(botaoConcluir);
+            
+            // Botão para excluir
+            const botaoExcluir = document.createElement("button");
+            botaoExcluir.className = "excluir";
+            botaoExcluir.textContent = "×";
+            botaoExcluir.onclick = function() {
+                listaTarefas.removeChild(novaTarefa);
+                salvarTarefas();
+            };
+            acoes.appendChild(botaoExcluir);
+            
+            // Adicionar ações à tarefa
+            novaTarefa.appendChild(acoes);
+            
+            // Adicionar a nova tarefa à lista
+            listaTarefas.appendChild(novaTarefa);
+            
+            // Limpar o campo de entrada
+            input.value = "";
+            input.focus();
+            
+            // Salvar tarefas no LocalStorage
+            salvarTarefas();
+        }
+        
+        // Permitir adicionar tarefa pressionando Enter
+        document.getElementById("tarefa").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                adicionarTarefa();
+            }
+        });
+        
+        // Salvar tarefas no LocalStorage
+        function salvarTarefas() {
+            const tarefas = [];
+            document.querySelectorAll('#lista-tarefas li').forEach(item => {
+                tarefas.push({
+                    texto: item.querySelector('span').textContent,
+                    concluida: item.querySelector('span').classList.contains('concluida')
+                });
+            });
+            localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
+        }
+        
+        // Carregar tarefas do LocalStorage
+        function carregarTarefas() {
+            const tarefasSalvas = localStorage.getItem('minhasTarefas');
+            if (tarefasSalvas) {
+                const tarefas = JSON.parse(tarefasSalvas);
+                const listaTarefas = document.getElementById("lista-tarefas");
+                
+                tarefas.forEach(tarefa => {
+                    // Criar um novo item de lista
+                    const novaTarefa = document.createElement("li");
+                    
+                    // Adicionar o texto da tarefa
+                    const textoElemento = document.createElement("span");
+                    textoElemento.textContent = tarefa.texto;
+                    if (tarefa.concluida) {
+                        textoElemento.classList.add("concluida");
+                    }
+                    novaTarefa.appendChild(textoElemento);
+                    
+                    // Adicionar botões de ação
+                    const acoes = document.createElement("div");
+                    acoes.className = "acoes";
+                    
+                    // Botão para marcar como concluída
+                    const botaoConcluir = document.createElement("button");
+                    botaoConcluir.className = "concluir";
+                    botaoConcluir.textContent = "✓";
+                    botaoConcluir.onclick = function() {
+                        textoElemento.classList.toggle("concluida");
+                        salvarTarefas();
+                    };
+                    acoes.appendChild(botaoConcluir);
+                    
+                    // Botão para excluir
+                    const botaoExcluir = document.createElement("button");
+                    botaoExcluir.className = "excluir";
+                    botaoExcluir.textContent = "×";
+                    botaoExcluir.onclick = function() {
+                        listaTarefas.removeChild(novaTarefa);
+                        salvarTarefas();
+                    };
+                    acoes.appendChild(botaoExcluir);
+                    
+                    // Adicionar ações à tarefa
+                    novaTarefa.appendChild(acoes);
+                    
+                    // Adicionar a tarefa à lista
+                    listaTarefas.appendChild(novaTarefa);
+                });
+            }
+        }
+        
+        // Carregar tarefas ao iniciar a aplicação
+        window.addEventListener('load', carregarTarefas);
+    </script>
+    
+    <!-- Inline Service Worker -->
+    <script id="sw-inline" type="text/javascript">
+        // Este script será extraído para criar o arquivo sw.js
+        const CACHE_NAME = 'tarefas-app-v1';
+        const urlsToCache = [
+            './',
+            './index.html'
+        ];
+
+        self.addEventListener('install', event => {
+            event.waitUntil(
+                caches.open(CACHE_NAME).then(cache => {
+                    return cache.addAll(urlsToCache);
+                })
+            );
+        });
+
+        self.addEventListener('fetch', event => {
+            event.respondWith(
+                caches.match(event.request).then(response => {
+                    return response || fetch(event.request);
+                })
+            );
+        });
+    </script>
+    
+    <!-- Script para extrair e salvar o Service Worker -->
+    <script>
+        // Extrair o código do Service Worker e salvá-lo como um Blob URL
+        const swCode = document.getElementById('sw-inline').textContent;
+        const blob = new Blob([swCode], {type: 'text/javascript'});
+        const swUrl = URL.createObjectURL(blob);
+        
+        // Substituir o registro do Service Worker para usar o Blob URL
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register(swUrl).then(registration => {
+                    console.log('ServiceWorker registrado com sucesso:', registration.scope);
+                }).catch(error => {
+                    console.log('Falha ao registrar ServiceWorker:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
